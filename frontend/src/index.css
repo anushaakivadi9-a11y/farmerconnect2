@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:wght@600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* FarmConnect palette: farmGreen #2D5A27, harvestGold #F2C94C */
+    --background: 60 30% 97%;
+    --foreground: 110 35% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 110 35% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 110 35% 12%;
+
+    --primary: 110 39% 25%;
+    --primary-foreground: 60 30% 97%;
+    --primary-glow: 110 35% 38%;
+
+    --secondary: 95 30% 92%;
+    --secondary-foreground: 110 35% 18%;
+
+    --muted: 60 20% 94%;
+    --muted-foreground: 110 10% 38%;
+
+    --accent: 45 86% 62%;
+    --accent-foreground: 110 50% 12%;
+
+    --destructive: 0 75% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 110 15% 88%;
+    --input: 110 15% 88%;
+    --ring: 110 39% 25%;
+
+    --radius: 0.75rem;
+
+    --gradient-hero: linear-gradient(135deg, hsl(110 39% 25%) 0%, hsl(110 35% 38%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(45 86% 62%) 0%, hsl(38 90% 55%) 100%);
+    --gradient-fade: linear-gradient(180deg, hsl(60 30% 97% / 0) 0%, hsl(60 30% 97%) 100%);
+    --shadow-soft: 0 8px 30px -12px hsl(110 39% 25% / 0.18);
+    --shadow-gold: 0 10px 40px -12px hsl(45 86% 62% / 0.5);
+
+    --sidebar-background: 110 39% 14%;
+    --sidebar-foreground: 60 30% 95%;
+    --sidebar-primary: 45 86% 62%;
+    --sidebar-primary-foreground: 110 50% 12%;
+    --sidebar-accent: 110 35% 20%;
+    --sidebar-accent-foreground: 60 30% 95%;
+    --sidebar-border: 110 30% 22%;
+    --sidebar-ring: 45 86% 62%;
+  }
+
+  .dark {
+    --background: 110 25% 8%;
+    --foreground: 60 30% 95%;
+    --card: 110 22% 12%;
+    --card-foreground: 60 30% 95%;
+    --popover: 110 22% 12%;
+    --popover-foreground: 60 30% 95%;
+    --primary: 45 86% 62%;
+    --primary-foreground: 110 50% 12%;
+    --secondary: 110 20% 18%;
+    --secondary-foreground: 60 30% 95%;
+    --muted: 110 18% 16%;
+    --muted-foreground: 60 10% 65%;
+    --accent: 110 35% 38%;
+    --accent-foreground: 60 30% 95%;
+    --border: 110 20% 20%;
+    --input: 110 20% 20%;
+    --ring: 45 86% 62%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+  h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; letter-spacing: -0.02em; }
+}
+
+@layer utilities {
+  .bg-hero-gradient { background: var(--gradient-hero); }
+  .bg-gold-gradient { background: var(--gradient-gold); }
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-gold { box-shadow: var(--shadow-gold); }
+  .text-balance { text-wrap: balance; }
+}
