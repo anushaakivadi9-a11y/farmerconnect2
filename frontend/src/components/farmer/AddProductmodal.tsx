@@ -4,11 +4,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import axios from "axios";
 
-// ─── CONFIG ──────────────────────────────────────────────────────────────────
-// Replace these with your actual Cloudinary values
-const CLOUDINARY_CLOUD_NAME = "your_cloud_name";      // e.g. "dxyz123abc"
-const CLOUDINARY_UPLOAD_PRESET = "your_upload_preset"; // unsigned preset name
-// ─────────────────────────────────────────────────────────────────────────────
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
 const API = axios.create({ baseURL: "http://localhost:5000/api" });
 

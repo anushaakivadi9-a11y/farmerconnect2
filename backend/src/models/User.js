@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     }
   },
   phone: { type: String },
-  isVerified: { type: Boolean, default: false },
+  isVerified: { type: Boolean, default: true },
   isActive: { type: Boolean, default: true }
 }, {
   timestamps: true

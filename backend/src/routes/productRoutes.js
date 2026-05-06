@@ -1,18 +1,40 @@
 const express = require('express');
-const { 
-  getProducts, 
-  createProduct, 
-  updateProduct 
-} = require('../controllers/productController');
-const authMiddleware = require('../middleware/authMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
 const router = express.Router();
 
-router.get('/', getProducts); // Public - Buyers
+const {
+  getProducts,
+  createProduct,
+  updateProduct,
+  getMyProducts,
+   deleteProduct,
+   getProductById,
+   addReview,
+} = require('../controllers/productController');
 
-router.use(authMiddleware); // All below require auth
+const authMiddleware = require('../middleware/authMiddleware');
+const roleMiddleware = require('../middleware/roleMiddleware');
 
-router.post('/', roleMiddleware('farmer'), createProduct);
-router.put('/:id', roleMiddleware('farmer'), updateProduct);
+// Public route
+router.get('/', getProducts);
+router.get('/:id', getProductById); 
+// Protected routes
+router.use(authMiddleware);
+
+router.get('/my', getMyProducts);
+router.post('/:id/reviews', addReview); 
+
+router.post(
+  '/',
+  roleMiddleware('farmer'),
+  createProduct
+);
+
+router.put(
+  '/:id',
+  roleMiddleware('farmer'),
+  updateProduct
+);
+
+router.delete('/:id', roleMiddleware('farmer'), deleteProduct);
 
 module.exports = router;

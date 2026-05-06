@@ -25,38 +25,55 @@ const Cart = () => {
       <div className="lg:col-span-2">
         <h1 className="font-display text-3xl font-bold mb-6">Your Cart ({items.length})</h1>
         <div className="space-y-3">
-          {items.map(({ product, qty }) => (
-            <div key={product._id} className="bg-card border border-border rounded-2xl p-4 flex gap-4 items-center">
-              {/* ✅ FIXED: use imageUrl (matches MongoDB schema) */}
-              <img src={product.imageUrl} alt={product.name} className="w-20 h-20 object-cover rounded-xl" />
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold truncate">{product.name}</p>
-                <p className="text-xs text-muted-foreground">₹{product.price}/{product.unit}</p>
-              </div>
-              <div className="flex items-center gap-2 bg-secondary rounded-lg p-1">
-                <button
-                  onClick={() => setQty(product._id, qty - 1)}
-                  className="p-1 hover:bg-background rounded"
-                >
-                  <Minus size={14} />
-                </button>
-                <span className="w-6 text-center text-sm font-semibold">{qty}</span>
-                <button
-                  onClick={() => setQty(product._id, qty + 1)}
-                  className="p-1 hover:bg-background rounded"
-                >
-                  <Plus size={14} />
-                </button>
-              </div>
-              <p className="font-bold w-20 text-right">₹{product.price * qty}</p>
-              <button
-                onClick={() => remove(product._id)}
-                className="text-muted-foreground hover:text-destructive"
+          {items.map(({ product, qty }) => {
+            // farmer can be a populated object { _id, name } or a plain string
+            const farmerName =
+              typeof product.farmer === "object" && product.farmer !== null
+                ? (product.farmer as any).name
+                : product.farmer;
+
+            return (
+              <div
+                key={product._id}                         // ✅ FIXED: was product.id
+                className="bg-card border border-border rounded-2xl p-4 flex gap-4 items-center"
               >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          ))}
+                <img
+                  src={product.imageUrl}
+                  alt={product.name}
+                  className="w-20 h-20 object-cover rounded-xl"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold truncate">{product.name}</p>
+                  {/* ✅ FIXED: show populated farmer name, not raw ObjectId */}
+                  <p className="text-xs text-muted-foreground">
+                    {farmerName} · ₹{product.price}/{product.unit}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 bg-secondary rounded-lg p-1">
+                  <button
+                    onClick={() => setQty(product._id, qty - 1)}  // ✅ FIXED: was product.id
+                    className="p-1 hover:bg-background rounded"
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <span className="w-6 text-center text-sm font-semibold">{qty}</span>
+                  <button
+                    onClick={() => setQty(product._id, qty + 1)}  // ✅ FIXED: was product.id
+                    className="p-1 hover:bg-background rounded"
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+                <p className="font-bold w-20 text-right">₹{product.price * qty}</p>
+                <button
+                  onClick={() => remove(product._id)}             // ✅ FIXED: was product.id
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            );
+          })}
         </div>
       </div>
 

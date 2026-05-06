@@ -8,7 +8,8 @@ export interface Product {
   price: number;
   unit: string;
   stock: number;
-  farmer: string;       // populated farmerInfo name, or raw ObjectId string
+  // ✅ FIXED: farmer can be a populated object { _id, name } OR a raw ObjectId string
+  farmer: { _id: string; name: string } | string;
   imageUrl: string;     // your schema uses imageUrl (not image)
   isActive: boolean;
   isVerified: boolean;
@@ -58,7 +59,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const clear = () => setItems([]);
 
-  const total = items.reduce((sum, { product, qty }) => sum + product.price * qty, 0);
+  const total = items.reduce(
+    (sum, { product, qty }) => sum + product.price * qty,
+    0
+  );
 
   return (
     <CartContext.Provider value={{ items, add, remove, setQty, clear, total }}>

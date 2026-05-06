@@ -14,7 +14,16 @@ const productSchema = new mongoose.Schema({
   imageUrl: { type: String, required: true },
   unit: { type: String, default: 'kg' }, // kg, liter, piece, etc.
   isActive: { type: Boolean, default: true },
-  isVerified: { type: Boolean, default: false }
+  isVerified: { type: Boolean, default: true },
+
+   reviews: [
+    {
+      user:      { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+      rating:    { type: Number, required: true, min: 1, max: 5 },
+      comment:   { type: String, required: true, trim: true },
+      createdAt: { type: Date, default: Date.now },
+    },
+  ],
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
