@@ -5,7 +5,7 @@ import ProductCard from "@/components/buyer/ProductCard";
 import { Product } from "@/context/CartContext";
 import axios from "axios";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 const Products = () => {
   const [q, setQ] = useState("");

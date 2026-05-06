@@ -12,8 +12,8 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import ChatWindow from "@/components/chat/ChatWindow";
 
-const API_BASE   = "http://localhost:5000/api";
-const SOCKET_URL = "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE;
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
 
 interface Review {
   _id: string;

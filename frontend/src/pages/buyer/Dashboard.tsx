@@ -9,7 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 import { toast } from "sonner";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 // Order status config — maps backend enum → display info
 const STATUS_STEPS = ["confirmed", "processing", "shipped", "delivered"] as const;

@@ -13,9 +13,8 @@ import { toast } from "sonner";
 import AddProductModal from "@/components/farmer/AddProductModal";
 import axios from "axios";
 import { io, Socket } from "socket.io-client";
-
-const API = "http://localhost:5000/api";
-const SOCKET_URL = "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE;
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
 
 const stats = [
   { label: "Total Earnings", value: "₹1,52,400", icon: IndianRupee, change: "+12.4%" },
