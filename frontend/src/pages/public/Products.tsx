@@ -21,7 +21,8 @@ const Products = () => {
         setLoading(true);
         const { data } = await axios.get(`${API_BASE}/products`);
         // Support both { products: [...] } and plain array responses
-        setProducts(Array.isArray(data) ? data : data.?? []);
+        setProducts(Array.isArray(data) ? data : data.
+        products?? []);
       } catch (err: any) {
         setError(err?.response?.data?.message || "Failed to load products");
       } finally {
