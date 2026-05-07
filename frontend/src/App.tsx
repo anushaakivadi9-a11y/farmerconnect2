@@ -17,6 +17,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import NotFound from "./pages/NotFound";
 import Checkout from "@/pages/buyer/checkout";
 import ProductDetail from "./pages/public/ProductDetail";
+import About from "./pages/public/About";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
               <Route element={<MainLayout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/products" element={<Products />} />
+                <Route path="/about" element={<About />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/products/:id" element={<ProductDetail />} />

@@ -48,7 +48,7 @@ const FarmerChatInbox = () => {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const { data } = await axios.get(`${API_BASE}/chat/my`, {
+        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/chat/my`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setChats(data.data || []);

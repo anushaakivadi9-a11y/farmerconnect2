@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import axios from "axios";
 
+
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
-const API = axios.create({ baseURL: "http://localhost:5000/api" });
+const API = axios.create({ baseURL: `${import.meta.env.VITE_API_URL}/api` });
 
 const CATEGORIES = ["vegetables", "fruits", "grains", "dairy", "organic", "others"] as const;
 const UNITS = ["kg", "g", "litre", "ml", "piece", "dozen", "bunch", "quintal", "tonne"] as const;

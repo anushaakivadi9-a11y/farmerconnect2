@@ -24,12 +24,21 @@ connectDB();
 app.use(helmet());
 
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:8080",
-    "https://your-netlify-site.netlify.app",  // ← add your actual Netlify URL
-  ],
-  credentials: true
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      "http://localhost:5173",
+      "http://localhost:8080",
+      process.env.FRONTEND_URL,
+    ].filter(Boolean); // ← removes undefined/null entries
+
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS blocked: ${origin}`));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 }));
 
 app.use(morgan('combined'));

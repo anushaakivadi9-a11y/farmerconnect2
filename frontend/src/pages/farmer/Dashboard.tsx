@@ -72,7 +72,7 @@ const ChatPanel = ({
   useEffect(() => {
     const loadMessages = async () => {
       try {
-        const { data } = await axios.get(`${API}/chat/${chat._id}`, {
+        const { data } = await axios.get(`${import.meta.env.VITE_API_BASE}/chat/${chat._id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setMessages(data.data.messages || []);
@@ -298,7 +298,7 @@ const FarmerDashboard = () => {
   useEffect(() => {
     const fetchMyProducts = async () => {
       try {
-        const { data } = await axios.get(`${API}/products/my`, {
+        const { data } = await axios.get(`${import.meta.env.VITE_API_BASE}/products/my`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setList(Array.isArray(data) ? data : data.data ?? []);
@@ -313,7 +313,7 @@ const FarmerDashboard = () => {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const { data } = await axios.get(`${API}/chat/my`, {
+        const { data } = await axios.get(`${import.meta.env.VITE_API_BASE}/chat/my`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const chats: Chat[] = data.data || [];
@@ -388,7 +388,7 @@ const FarmerDashboard = () => {
 
   const deleteProduct = async (p: Product) => {
     try {
-      await axios.delete(`${API}/products/${p._id ?? (p as any).id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_BASE}/products/${p._id ?? (p as any).id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setList(list.filter((x) => (x._id ?? (x as any).id) !== (p._id ?? (p as any).id)));
