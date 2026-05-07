@@ -330,56 +330,65 @@ const FarmerDashboard = () => {
 
   // ── Fetch farmer stats ─────────────────────────────────────────────────────
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const { data } = await axios.get(`${API_BASE}/orders/farmer-stats`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setStatsData(data.data);
-      } catch (err) {
-        console.error("Failed to fetch stats", err);
-      }
-    };
-    if (token) fetchStats();
-  }, []);
+  const fetchStats = async () => {
+    const token = localStorage.getItem("fc_token"); // fresh
+    if (!token || !myId) return;
+    try {
+      const { data } = await axios.get(`${API_BASE}/orders/farmer-stats`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setStatsData(data.data);
+    } catch (err) {
+      console.error("Failed to fetch stats", err);
+    }
+  };
+  fetchStats();
+}, [myId]);
+
 
   // ── Fetch my products ──────────────────────────────────────────────────────
-  useEffect(() => {
-    const fetchMyProducts = async () => {
-      try {
-        const { data } = await axios.get(`${API_BASE}/products/my`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setList(Array.isArray(data) ? data : data.data ?? []);
-      } catch (err) {
-        console.error("Failed to fetch products", err);
-      }
-    };
-    fetchMyProducts();
-  }, []);
+  // ✅ Read token fresh inside each useEffect
+useEffect(() => {
+  const fetchMyProducts = async () => {
+    const token = localStorage.getItem("fc_token"); // ← read fresh here
+    if (!token) return; // ← guard
+    try {
+      const { data } = await axios.get(`${API_BASE}/products/my`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setList(Array.isArray(data) ? data : data.data ?? []);
+    } catch (err) {
+      console.error("Failed to fetch products", err);
+    }
+  };
+  fetchMyProducts();
+}, [myId]); // ← depend on myId so it re-runs when user is set
 
   // ── Fetch chats grouped by product ────────────────────────────────────────
-  useEffect(() => {
-    const fetchChats = async () => {
-      try {
-        const { data } = await axios.get(`${API_BASE}/chat/my`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const chats: Chat[] = data.data || [];
-        const grouped: ProductChatsMap = {};
-        chats.forEach((c) => {
-          const pid = c.product?._id;
-          if (!pid) return;
-          if (!grouped[pid]) grouped[pid] = [];
-          grouped[pid].push(c);
-        });
-        setProductChats(grouped);
-      } catch (err) {
-        console.error("Failed to fetch chats", err);
-      }
-    };
-    fetchChats();
-  }, []);
+ useEffect(() => {
+  const fetchChats = async () => {
+    const token = localStorage.getItem("fc_token"); // fresh
+    if (!token || !myId) return;
+    try {
+      const { data } = await axios.get(`${API_BASE}/chat/my`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const chats: Chat[] = data.data || [];
+      const grouped: ProductChatsMap = {};
+      chats.forEach((c) => {
+        const pid = c.product?._id;
+        if (!pid) return;
+        if (!grouped[pid]) grouped[pid] = [];
+        grouped[pid].push(c);
+      });
+      setProductChats(grouped);
+    } catch (err) {
+      console.error("Failed to fetch chats", err);
+    }
+  };
+  fetchChats();
+}, [myId]); 
+
 
   // ── Socket — new message notifications ────────────────────────────────────
   useEffect(() => {

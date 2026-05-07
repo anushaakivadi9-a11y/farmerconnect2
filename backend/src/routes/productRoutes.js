@@ -1,41 +1,26 @@
 const express = require('express');
 const router = express.Router();
-
 const {
-  getProducts,
-  createProduct,
-  updateProduct,
-  getMyProducts,
-   deleteProduct,
-   getProductById,
-   addReview,
+  getProducts, createProduct, updateProduct,
+  getMyProducts, deleteProduct, getProductById, addReview,
 } = require('../controllers/productController');
-
 const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
 
-// Public route
+// ✅ 1. Public — no auth
 router.get('/', getProducts);
-router.get('/:id', getProductById); 
-// Protected routes
+
+// ✅ 2. Auth middleware for all below
 router.use(authMiddleware);
 
+// ✅ 3. Specific string routes BEFORE /:id wildcard
 router.get('/my', getMyProducts);
-router.post('/:id/reviews', addReview); 
-
-router.post(
-  '/',
-  roleMiddleware('farmer'),
-  createProduct
-);
-
-router.put(
-  '/:id',
-  roleMiddleware('farmer'),
-  updateProduct
-);
-
+router.post('/', roleMiddleware('farmer'), createProduct);
+router.post('/:id/reviews', addReview);
+router.put('/:id', roleMiddleware('farmer'), updateProduct);
 router.delete('/:id', roleMiddleware('farmer'), deleteProduct);
+
+// ✅ 4. Wildcard /:id LAST
 router.get('/:id', getProductById);
 
 module.exports = router;
