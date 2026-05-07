@@ -17,7 +17,7 @@ const WeatherCard = () => (
     <div className="flex items-start justify-between mb-5">
       <div>
         <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Weather Insights</p>
-        <h3 className="text-2xl font-display font-bold mt-1">Mysuru, Karnataka</h3>
+        <h3 className="text-2xl font-display font-bold mt-1">Belagavi, Karnataka</h3>
       </div>
       <div className="text-right">
         <div className="text-4xl font-bold text-foreground">29°</div>
