@@ -1,3 +1,115 @@
+// import { useEffect, useState } from "react";
+// import { Link, useNavigate } from "react-router-dom";
+// import { Sprout, ShoppingBag, Shield } from "lucide-react";
+// import { Button } from "@/components/ui/button";
+// import { useAuth } from "@/context/AuthContext";
+// import type { Role } from "@/data/mockData";
+// import { toast } from "sonner";
+
+// const roles: { id: Role; label: string; desc: string; icon: any }[] = [
+//   { id: "farmer", label: "Farmer", desc: "Sell your produce directly", icon: Sprout },
+//   { id: "buyer", label: "Buyer", desc: "Source fresh from the farm", icon: ShoppingBag },
+//   { id: "admin", label: "Admin", desc: "Manage the platform", icon: Shield },
+// ];
+
+// const AuthLayout = ({ mode }: { mode: "login" | "register" }) => {
+//   const [role, setRole] = useState<Role>("buyer");
+//   const [name, setName] = useState("");
+//   const [email, setEmail] = useState("");
+//   const [pw, setPw] = useState("");
+//   const nav = useNavigate();
+
+//   const { login, register, user } = useAuth();  // ← also destructure register
+
+//   // Redirect after user is set in context
+//     useEffect(() => {
+//       if (user) nav(`/${user.role}`);
+//     }, [user]);
+    
+    
+//   const submit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+    
+//     if (!email || !pw) return toast.error("Please fill all fields");
+//     if (mode === "register" && !name) return toast.error("Name is required");
+//     try {
+//       if (mode === "login") {
+//         await login(email, pw);         // login sets user in context
+//       } else {
+//         await register(name, email, pw, role);
+//       }
+//       toast.success(mode === "login" ? "Welcome back!" : "Account created!");
+//       // ❌ Don't use local `role` state — read from auth context after login
+//     } catch (err: any) {
+//       toast.error(err?.response?.data?.message || "Auth failed");
+//     }
+//   };
+
+//   return (
+    
+//   <div className="min-h-[calc(100vh-4rem)] grid lg:grid-cols-2">
+//     <div className="hidden lg:flex bg-hero-gradient text-primary-foreground p-12 flex-col justify-between relative overflow-hidden">
+//       <div>
+//         <div className="flex items-center gap-2">
+//           <div className="w-10 h-10 rounded-xl bg-accent grid place-items-center"><Sprout className="text-accent-foreground" size={22} /></div>
+//           <span className="font-display text-2xl font-extrabold">FarmConnect</span>
+//         </div>
+//       </div>
+//       <div className="relative">
+//         <h2 className="font-display text-5xl font-extrabold leading-tight">Grow more.<br />Earn more.<br /><span className="text-accent">Together.</span></h2>
+//         <p className="mt-5 text-primary-foreground/80 max-w-md">Join thousands of farmers and buyers building a fairer food system.</p>
+//       </div>
+//       <p className="text-xs text-primary-foreground/60 relative">© 2026 FarmConnect</p>
+//     </div>
+
+//     <div className="flex items-center justify-center p-6 sm:p-12">
+//       <div className="w-full max-w-md">
+//         <h1 className="font-display text-3xl font-bold mb-2">{mode === "login" ? "Welcome back" : "Create your account"}</h1>
+//         <p className="text-muted-foreground text-sm mb-7">
+//           {mode === "login" ? "Log in to continue to FarmConnect." : "Pick your role and get started in seconds."}
+//         </p>
+
+//         <div className="grid grid-cols-3 gap-2 mb-6">
+//           {roles.map((r) => (
+//             <button key={r.id} type="button" onClick={() => setRole(r.id)}
+//               className={`p-3 rounded-xl border text-left transition-all ${role === r.id ? "border-primary bg-primary/5 shadow-soft" : "border-border hover:border-primary/40"}`}>
+//               <r.icon size={18} className={role === r.id ? "text-primary" : "text-muted-foreground"} />
+//               <p className="font-semibold text-sm mt-2">{r.label}</p>
+//               <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">{r.desc}</p>
+//             </button>
+//           ))}
+//         </div>
+
+//         <form onSubmit={submit} className="space-y-3">
+//           {mode === "register" && (
+//             <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name"
+//               className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40" />
+//           )}
+//           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email address" required
+//             className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40" />
+//           <input type="password" value={pw} onChange={(e) => setPw(e.target.value)} placeholder="Password" required
+//             className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40" />
+//           <Button type="submit" size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+//             {mode === "login" ? "Log in" : "Create account"}
+//           </Button>
+//         </form>
+
+//         <p className="text-sm text-muted-foreground mt-6 text-center">
+//           {mode === "login" ? (
+//             <>New here? <Link to="/register" className="text-primary font-semibold">Create an account</Link></>
+//           ) : (
+//             <>Already have one? <Link to="/login" className="text-primary font-semibold">Log in</Link></>
+//           )}
+//         </p>
+//       </div>
+//     </div>
+//   </div>
+//   );
+// };
+
+// export const Login = () => <AuthLayout mode="login" />;
+// export const Register = () => <AuthLayout mode="register" />;
+
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Sprout, ShoppingBag, Shield } from "lucide-react";
@@ -7,9 +119,24 @@ import type { Role } from "@/data/mockData";
 import { toast } from "sonner";
 
 const roles: { id: Role; label: string; desc: string; icon: any }[] = [
-  { id: "farmer", label: "Farmer", desc: "Sell your produce directly", icon: Sprout },
-  { id: "buyer", label: "Buyer", desc: "Source fresh from the farm", icon: ShoppingBag },
-  { id: "admin", label: "Admin", desc: "Manage the platform", icon: Shield },
+  {
+    id: "farmer",
+    label: "Farmer",
+    desc: "Sell your produce directly",
+    icon: Sprout,
+  },
+  {
+    id: "buyer",
+    label: "Buyer",
+    desc: "Source fresh from the farm",
+    icon: ShoppingBag,
+  },
+  {
+    id: "admin",
+    label: "Admin",
+    desc: "Manage the platform",
+    icon: Shield,
+  },
 ];
 
 const AuthLayout = ({ mode }: { mode: "login" | "register" }) => {
@@ -17,95 +144,217 @@ const AuthLayout = ({ mode }: { mode: "login" | "register" }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
+
   const nav = useNavigate();
 
-  const { login, register, user } = useAuth();  // ← also destructure register
+  const { login, register, user } = useAuth();
 
-  // Redirect after user is set in context
-    useEffect(() => {
-      if (user) nav(`/${user.role}`);
-    }, [user]);
-    
-    
+  useEffect(() => {
+    if (user) {
+      nav(`/${user.role}`);
+    }
+  }, [user, nav]);
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email || !pw) return toast.error("Please fill all fields");
-    if (mode === "register" && !name) return toast.error("Name is required");
+
+    if (!email || !pw) {
+      return toast.error("Please fill all fields");
+    }
+
+    if (mode === "register" && !name) {
+      return toast.error("Name is required");
+    }
+
     try {
       if (mode === "login") {
-        await login(email, pw);         // login sets user in context
+        await login(email, pw);
       } else {
         await register(name, email, pw, role);
       }
-      toast.success(mode === "login" ? "Welcome back!" : "Account created!");
-      // ❌ Don't use local `role` state — read from auth context after login
+
+      toast.success(
+        mode === "login"
+          ? "Welcome back!"
+          : "Account created successfully!"
+      );
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Auth failed");
+      toast.error(err?.response?.data?.message || "Authentication failed");
     }
   };
 
   return (
-    
-  <div className="min-h-[calc(100vh-4rem)] grid lg:grid-cols-2">
-    <div className="hidden lg:flex bg-hero-gradient text-primary-foreground p-12 flex-col justify-between relative overflow-hidden">
-      <div>
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-xl bg-accent grid place-items-center"><Sprout className="text-accent-foreground" size={22} /></div>
-          <span className="font-display text-2xl font-extrabold">FarmConnect</span>
-        </div>
-      </div>
-      <div className="relative">
-        <h2 className="font-display text-5xl font-extrabold leading-tight">Grow more.<br />Earn more.<br /><span className="text-accent">Together.</span></h2>
-        <p className="mt-5 text-primary-foreground/80 max-w-md">Join thousands of farmers and buyers building a fairer food system.</p>
-      </div>
-      <p className="text-xs text-primary-foreground/60 relative">© 2026 FarmConnect</p>
-    </div>
+    <div className="min-h-[calc(100vh-4rem)] grid lg:grid-cols-2">
+      
+      {/* LEFT SECTION */}
+      <div
+        className="hidden lg:flex text-white p-12 flex-col justify-between relative overflow-hidden bg-cover bg-center"
+        style={{
+          backgroundImage:
+            "url('https://i.pinimg.com/1200x/ba/37/c7/ba37c797072f4208a4baa6ccfa11f8b5.jpg')",
+        }}
+      >
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 bg-black/45"></div>
 
-    <div className="flex items-center justify-center p-6 sm:p-12">
-      <div className="w-full max-w-md">
-        <h1 className="font-display text-3xl font-bold mb-2">{mode === "login" ? "Welcome back" : "Create your account"}</h1>
-        <p className="text-muted-foreground text-sm mb-7">
-          {mode === "login" ? "Log in to continue to FarmConnect." : "Pick your role and get started in seconds."}
-        </p>
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
 
-        <div className="grid grid-cols-3 gap-2 mb-6">
-          {roles.map((r) => (
-            <button key={r.id} type="button" onClick={() => setRole(r.id)}
-              className={`p-3 rounded-xl border text-left transition-all ${role === r.id ? "border-primary bg-primary/5 shadow-soft" : "border-border hover:border-primary/40"}`}>
-              <r.icon size={18} className={role === r.id ? "text-primary" : "text-muted-foreground"} />
-              <p className="font-semibold text-sm mt-2">{r.label}</p>
-              <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">{r.desc}</p>
-            </button>
-          ))}
+        {/* Logo */}
+        <div className="relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-yellow-400/90 backdrop-blur-md flex items-center justify-center shadow-lg">
+              <Sprout className="text-black" size={22} />
+            </div>
+
+            <span className="font-display text-3xl font-extrabold tracking-wide drop-shadow-lg">
+              FarmConnect
+            </span>
+          </div>
         </div>
 
-        <form onSubmit={submit} className="space-y-3">
-          {mode === "register" && (
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name"
-              className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40" />
-          )}
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email address" required
-            className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40" />
-          <input type="password" value={pw} onChange={(e) => setPw(e.target.value)} placeholder="Password" required
-            className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40" />
-          <Button type="submit" size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-            {mode === "login" ? "Log in" : "Create account"}
-          </Button>
-        </form>
+        {/* Hero Content */}
+        <div className="relative z-10 max-w-lg">
+          <div className="backdrop-blur-sm bg-white/5 p-6 rounded-3xl border border-white/10">
+            <h2 className="font-display text-6xl font-extrabold leading-tight drop-shadow-2xl">
+              Grow more.
+              <br />
+              Earn more.
+              <br />
+              <span className="text-yellow-300">Together.</span>
+            </h2>
 
-        <p className="text-sm text-muted-foreground mt-6 text-center">
-          {mode === "login" ? (
-            <>New here? <Link to="/register" className="text-primary font-semibold">Create an account</Link></>
-          ) : (
-            <>Already have one? <Link to="/login" className="text-primary font-semibold">Log in</Link></>
-          )}
+            <p className="mt-6 text-lg text-white/85 leading-relaxed">
+              Join thousands of farmers and buyers building a smarter,
+              fairer, and more connected agricultural ecosystem.
+            </p>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <p className="text-sm text-white/70 relative z-10">
+          © 2026 FarmConnect
         </p>
       </div>
+
+      {/* RIGHT SECTION */}
+      <div className="flex items-center justify-center p-6 sm:p-12 bg-background">
+        <div className="w-full max-w-md">
+          
+          <h1 className="font-display text-3xl font-bold mb-2">
+            {mode === "login"
+              ? "Welcome back"
+              : "Create your account"}
+          </h1>
+
+          <p className="text-muted-foreground text-sm mb-7">
+            {mode === "login"
+              ? "Log in to continue to FarmConnect."
+              : "Pick your role and get started in seconds."}
+          </p>
+
+          {/* ROLE SELECT */}
+          <div className="grid grid-cols-3 gap-2 mb-6">
+            {roles.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => setRole(r.id)}
+                className={`p-3 rounded-xl border text-left transition-all ${
+                  role === r.id
+                    ? "border-primary bg-primary/5 shadow-soft"
+                    : "border-border hover:border-primary/40"
+                }`}
+              >
+                <r.icon
+                  size={18}
+                  className={
+                    role === r.id
+                      ? "text-primary"
+                      : "text-muted-foreground"
+                  }
+                />
+
+                <p className="font-semibold text-sm mt-2">
+                  {r.label}
+                </p>
+
+                <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">
+                  {r.desc}
+                </p>
+              </button>
+            ))}
+          </div>
+
+          {/* FORM */}
+          <form onSubmit={submit} className="space-y-3">
+            
+            {mode === "register" && (
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Full name"
+                className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+              />
+            )}
+
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email address"
+              required
+              className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+            />
+
+            <input
+              type="password"
+              value={pw}
+              onChange={(e) => setPw(e.target.value)}
+              placeholder="Password"
+              required
+              className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+            />
+
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              {mode === "login" ? "Log in" : "Create account"}
+            </Button>
+          </form>
+
+          {/* FOOTER LINK */}
+          <p className="text-sm text-muted-foreground mt-6 text-center">
+            {mode === "login" ? (
+              <>
+                New here?{" "}
+                <Link
+                  to="/register"
+                  className="text-primary font-semibold"
+                >
+                  Create an account
+                </Link>
+              </>
+            ) : (
+              <>
+                Already have one?{" "}
+                <Link
+                  to="/login"
+                  className="text-primary font-semibold"
+                >
+                  Log in
+                </Link>
+              </>
+            )}
+          </p>
+        </div>
+      </div>
     </div>
-  </div>
   );
 };
 
 export const Login = () => <AuthLayout mode="login" />;
+
 export const Register = () => <AuthLayout mode="register" />;
