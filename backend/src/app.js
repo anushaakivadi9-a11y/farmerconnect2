@@ -31,7 +31,7 @@ app.use(cors({
       process.env.FRONTEND_URL,
     ].filter(Boolean); // ← removes undefined/null entries
 
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.netlify.app')) {
       callback(null, true);
     } else {
       callback(new Error(`CORS blocked: ${origin}`));
