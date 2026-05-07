@@ -91,14 +91,18 @@ const ProductDetail = () => {
   const fetchProduct = useCallback(async () => {
   try {
     setLoading(true);
-    const { data } = await axios.get(`${API_BASE}/products/${id}`); // no auth header needed
+    const { data } = await axios.get(`${API_BASE}/products/${id}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}  // ← add this
+    });
     setProduct(data.data ?? data);
   } catch (err: any) {
     setError(err?.response?.data?.message || "Failed to load product");
   } finally {
     setLoading(false);
   }
-}, [id]);
+}, [id, token]);  // ← add token to deps
+
+
 
   useEffect(() => { if (id) fetchProduct(); }, [fetchProduct]);
 
