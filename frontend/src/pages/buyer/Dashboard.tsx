@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Heart, Package, Truck, CheckCircle2, MapPin, Clock, RefreshCw, ChevronDown, ChevronUp, IndianRupee } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { products } from "@/data/mockData";
 import ProductCard from "@/components/buyer/ProductCard";
 import WeatherCard from "@/components/widgets/WeatherCard";
 import { useAuth } from "@/context/AuthContext";
@@ -70,6 +69,8 @@ const OrderCard = ({ order }: { order: Order }) => {
   });
 
   return (
+
+    
     <motion.div
       layout
       initial={{ opacity: 0, y: 8 }}
@@ -199,6 +200,7 @@ const BuyerDashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+const [recommended, setRecommended] = useState<any[]>([]);
 
   const fetchOrders = async (silent = false) => {
     if (!silent) setLoading(true);
@@ -218,6 +220,17 @@ const BuyerDashboard = () => {
   };
 
   useEffect(() => { fetchOrders(); }, []);
+  useEffect(() => {
+  const fetchRecommended = async () => {
+    try {
+      const { data } = await axios.get(`${API_BASE}/products?limit=4`);
+      setRecommended(Array.isArray(data) ? data : data.data ?? []);
+    } catch (err) {
+      console.error("Failed to load recommended products");
+    }
+  };
+  fetchRecommended();
+}, []);
 
   const activeOrders  = orders.filter(o => !["delivered", "cancelled"].includes(o.orderStatus));
   const deliveredCount = orders.filter(o => o.orderStatus === "delivered").length;
@@ -316,7 +329,7 @@ const BuyerDashboard = () => {
         </Link>
       </div>
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {products.slice(0, 4).map(p => <ProductCard key={p.id} product={p} />)}
+{recommended.map(p => <ProductCard key={p._id} product={p} />)}
       </div>
     </div>
   );
