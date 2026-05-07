@@ -23,11 +23,8 @@ const AuthLayout = ({ mode }: { mode: "login" | "register" }) => {
 
   // Redirect after user is set in context
     useEffect(() => {
-  // Only redirect on LOGIN page
-  if (user && mode === "login") {
-    nav(`/${user.role}`);
-  }
-}, [user, mode]);
+      if (user) nav(`/${user.role}`);
+    }, [user]);
     
     
   const submit = async (e: React.FormEvent) => {

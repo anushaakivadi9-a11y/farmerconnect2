@@ -56,7 +56,76 @@ const getMyOrders = async (req, res) => {
   }
 };
 
-module.exports = { createOrder, getMyOrders };
+// @desc    Get stats for logged-in farmer
+// @route   GET /api/orders/farmer-stats
+const getFarmerStats = async (req, res) => {
+  try {
+    const farmerId = req.user._id;
+
+    // Get all orders that contain this farmer's products
+    const orders = await Order.find({
+      "items.product": {
+        $in: await require('../models/Product')
+          .find({ farmer: farmerId })
+          .distinct('_id')
+      }
+    }).populate('items.product', 'farmer price reviews');
+
+    // Filter only items belonging to this farmer
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    let totalEarnings = 0;
+    let ordersThisMonth = 0;
+    let totalRating = 0;
+    let ratingCount = 0;
+
+    orders.forEach(order => {
+      const myItems = order.items.filter(
+        item => String(item.product?.farmer) === String(farmerId)
+      );
+      if (myItems.length === 0) return;
+
+      // Earnings
+      myItems.forEach(item => {
+        totalEarnings += item.price * item.quantity;
+      });
+
+      // Orders this month
+      if (new Date(order.createdAt) >= startOfMonth) {
+        ordersThisMonth++;
+      }
+    });
+
+    // Avg rating from products
+    const products = await require('../models/Product')
+      .find({ farmer: farmerId });
+
+    products.forEach(p => {
+      (p.reviews || []).forEach(r => {
+        totalRating += r.rating;
+        ratingCount++;
+      });
+    });
+
+    res.json({
+      success: true,
+      data: {
+        totalEarnings,
+        ordersThisMonth,
+        avgRating: ratingCount > 0
+          ? Math.round((totalRating / ratingCount) * 10) / 10
+          : 0,
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
+module.exports = { createOrder, getMyOrders, getFarmerStats };
 
 
 // =============================

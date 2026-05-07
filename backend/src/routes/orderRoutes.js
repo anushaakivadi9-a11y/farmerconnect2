@@ -6,5 +6,6 @@ const router = express.Router();
 router.use(authMiddleware);
 router.post('/', createOrder);
 router.get('/my', getMyOrders);
+router.get('/farmer-stats', getFarmerStats); // ← add this
 
 module.exports = router;

@@ -36,5 +36,6 @@ router.put(
 );
 
 router.delete('/:id', roleMiddleware('farmer'), deleteProduct);
+router.get('/:id', getProductById);
 
 module.exports = router;
