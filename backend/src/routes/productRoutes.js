@@ -2,30 +2,27 @@ const express = require('express');
 const router = express.Router();
 
 const {
-  getProducts,
-  createProduct,
-  updateProduct,
-  getMyProducts,
-  deleteProduct,
-  getProductById,
-  addReview,
+  getProducts, createProduct, updateProduct,
+  getMyProducts, deleteProduct, getProductById, addReview,
 } = require('../controllers/productController');
 
 const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
 const optionalAuth = require('../middleware/optionalAuth');
 
-// ── Public routes ─────────────────────────────────────────────────────────────
+// ── Public ─────────────────────────────────────────────────────────────────
 router.get('/', getProducts);
-router.get('/:id', optionalAuth, getProductById); // public but token-aware
 
-// ── Protected routes (auth required) ─────────────────────────────────────────
-router.use(authMiddleware);
+// ── /my MUST be before /:id ────────────────────────────────────────────────
+router.get('/my', authMiddleware, getMyProducts);  // ← FIRST
 
-router.get('/my', getMyProducts);                            // must be after authMiddleware
-router.post('/', roleMiddleware('farmer'), createProduct);
-router.post('/:id/reviews', addReview);
-router.put('/:id', roleMiddleware('farmer'), updateProduct);
-router.delete('/:id', roleMiddleware('farmer'), deleteProduct);
+// ── Public single product ──────────────────────────────────────────────────
+router.get('/:id', optionalAuth, getProductById);  // ← AFTER /my
+
+// ── Farmer protected ───────────────────────────────────────────────────────
+router.post('/', authMiddleware, roleMiddleware('farmer'), createProduct);
+router.post('/:id/reviews', authMiddleware, addReview);
+router.put('/:id', authMiddleware, roleMiddleware('farmer'), updateProduct);
+router.delete('/:id', authMiddleware, roleMiddleware('farmer'), deleteProduct);
 
 module.exports = router;
