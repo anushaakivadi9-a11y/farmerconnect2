@@ -68,10 +68,10 @@ export default function AddProductModal({ onClose, onSuccess }: Props) {
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
       { method: "POST", body: formData }
     );
+
     if (!res.ok) throw new Error("Image upload failed");
     const data = await res.json();
-    return data.secure_url;
-  };
+    return { url: data.secure_url, publicId: data.public_id };  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,11 +85,15 @@ export default function AddProductModal({ onClose, onSuccess }: Props) {
     try {
       setSubmitting(true);
       let imageUrl = draft.imageUrl;
+      let imagePublicId = "";
 
       // Upload image if a new file was selected
       if (imageFile) {
         setUploading(true);
-        imageUrl = await uploadToCloudinary(imageFile);
+        const uploaded = await uploadToCloudinary(imageFile);
+        imageUrl = uploaded.url;
+        imagePublicId = uploaded.publicId;
+
         setUploading(false);
       }
 
@@ -104,6 +108,7 @@ export default function AddProductModal({ onClose, onSuccess }: Props) {
           category: draft.category,
           unit: draft.unit,
           imageUrl,
+          imagePublicId,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );

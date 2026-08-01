@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import type { Role } from "@/data/mockData";
-import axios from "axios";
+import { API } from "../api/api";
 
 // 1. Updated User interface to match your Backend (likely includes id)
 interface User {
@@ -20,10 +20,6 @@ interface AuthCtx {
 
 const Ctx = createContext<AuthCtx | undefined>(undefined);
 
-// Set your backend base URL
-const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE,
-});
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -45,6 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const response = await API.post("/auth/login", { email, password });
     const { token, user: userData } = response.data;
 
+    localStorage.clear();
     localStorage.setItem("fc_token", token);
     localStorage.setItem("fc_user", JSON.stringify(userData));
     API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -62,12 +59,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(userData);
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("fc_user");
-    localStorage.removeItem("fc_token");
-    delete API.defaults.headers.common["Authorization"];
-  };
+  const logout = async () => {
+  try {
+    await API.post('/auth/logout', {}, { withCredentials: true });
+  } catch (err) {
+    // even if this fails, still clear local state below
+  }
+  setUser(null);
+  localStorage.clear();
+  delete API.defaults.headers.common["Authorization"];
+};
 
   return (
     <Ctx.Provider value={{ user, login, register, logout, isLoading }}>

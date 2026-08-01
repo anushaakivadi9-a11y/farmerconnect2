@@ -1,33 +1,23 @@
 const express = require('express');
 const router = express.Router();
 
-const {
-  getProducts,
-  createProduct,
-  updateProduct,
-  getMyProducts,
-  deleteProduct,
-  getProductById,
-  addReview,
-} = require('../controllers/productController');
-
+const { createOrder, getMyOrders, getFarmerStats, getEarningsTrend } = require('../controllers/orderController');
 const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
-const optionalAuth = require('../middleware/optionalAuth');
+const slidingWindowRateLimit = require('../middleware/slidingWindowRateLimit');
 
-// ── Public routes ─────────────────────────────────────────────────────────────
-router.get('/', getProducts);
+const orderLimiter = slidingWindowRateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 10, // 10 order attempts per 10 min per user
+  keyPrefix: 'order',
+});
 
-// ── Protected routes (auth required) ─────────────────────────────────────────
-router.get('/my', authMiddleware, getMyProducts);        // ← BEFORE /:id
-
-// ── Public but token-aware ────────────────────────────────────────────────────
-router.get('/:id', optionalAuth, getProductById);        // ← AFTER /my
-
+// All order routes require authentication
 router.use(authMiddleware);
-router.post('/', roleMiddleware('farmer'), createProduct);
-router.post('/:id/reviews', addReview);
-router.put('/:id', roleMiddleware('farmer'), updateProduct);
-router.delete('/:id', roleMiddleware('farmer'), deleteProduct);
+
+router.get('/farmer-stats', roleMiddleware('farmer'), getFarmerStats); // specific route first
+router.get('/my', getMyOrders);
+router.get('/earnings-trend', roleMiddleware('farmer'), getEarningsTrend);
+router.post('/', orderLimiter, createOrder);
 
 module.exports = router;

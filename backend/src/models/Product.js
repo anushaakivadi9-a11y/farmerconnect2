@@ -24,6 +24,14 @@ const productSchema = new mongoose.Schema({
       createdAt: { type: Date, default: Date.now },
     },
   ],
+  imagePublicId: { type: String },   // Cloudinary public_id — required for server-side transforms
+thumbnailUrl: { type: String },    // populated async by the image worker
+moderationStatus: {
+  type: String,
+  enum: ['pending', 'approved', 'rejected'],
+  default: 'pending',
+},
+
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
@@ -37,7 +45,8 @@ productSchema.virtual('farmerInfo', {
   foreignField: '_id'
 });
 
-productSchema.index({ category: 1, price: 1 });
+productSchema.index({  isActive:1 ,createdAt: -1});
+productSchema.index({  isActive:1 ,category: 1,createdAt: -1});
 productSchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model('Product', productSchema);

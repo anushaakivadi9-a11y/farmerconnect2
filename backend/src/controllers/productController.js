@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const imageQueue = require('../queues/imageQueue'); 
 
 // @desc    Get all products (Buyers)
 // @route   GET /api/products
@@ -21,7 +22,8 @@ const getProducts = async (req, res) => {
       .populate('farmer', 'name location')   // ✅ populates farmer name for display
       .limit(limit * 1)
       .skip((page - 1) * limit)
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     const total = await Product.countDocuments(query);
 
@@ -52,6 +54,14 @@ const createProduct = async (req, res) => {
     const product = await Product.create(req.body);
     const populatedProduct = await Product.findById(product._id).populate('farmer', 'name');
 
+    if (req.body.imagePublicId) {
+      await imageQueue.add(
+        'process-product-image',
+        { productId: product._id.toString(), imagePublicId: req.body.imagePublicId },
+        { attempts: 3, backoff: { type: 'exponential', delay: 5000 } }
+      );
+    }
+    
     res.status(201).json({ success: true, data: populatedProduct });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -93,7 +103,8 @@ const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
       .populate('farmer', 'name location')
-      .populate('reviews.user', 'name');   // if reviews are embedded
+      .populate('reviews.user', 'name')
+      .lean();   // if reviews are embedded
 
     if (!product || !product.isActive) {
       return res.status(404).json({ success: false, message: 'Product not found' });
@@ -144,13 +155,11 @@ const addReview = async (req, res) => {
 };
 
 
-
-// @desc    Get my products (Farmer)
-// @route   GET /api/products/my
 const getMyProducts = async (req, res) => {
   try {
     const products = await Product.find({ farmer: req.user._id })
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
     res.json({ success: true, data: products });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

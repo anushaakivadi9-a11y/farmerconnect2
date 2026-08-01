@@ -5,7 +5,7 @@ import {
   TrendingUp, MessageCircle, X, Send, ChevronLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { earningsTrend } from "@/data/mockData";
+//import { earningsTrend } from "@/data/mockData";
 import { Product } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import MarketPriceCard from "@/components/farmer/MarketPriceCard";
@@ -16,9 +16,8 @@ import {
 } from "recharts";
 import { toast } from "sonner";
 import AddProductModal from "@/components/farmer/AddProductModal";
-import axios from "axios";
 import { io, Socket } from "socket.io-client";
-
+import { API } from "../../api/api";
 const API_BASE = import.meta.env.VITE_API_BASE;
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
 
@@ -68,15 +67,12 @@ const ChatPanel = ({
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
-  const token = localStorage.getItem("fc_token");
   const buyer = chat.participants.find((p) => p._id !== myId);
-
+  
   useEffect(() => {
     const loadMessages = async () => {
       try {
-        const { data } = await axios.get(`${API_BASE}/chat/${chat._id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const { data } = await API.get(`/chat/${chat._id}`);
         setMessages(data.data.messages || []);
         getSocket().emit("joinChat", chat._id);
       } catch (err) {
@@ -286,7 +282,6 @@ const ChatDrawer = ({
 const FarmerDashboard = () => {
   const { user } = useAuth();
   const myId = (user as any)?._id || (user as any)?.id || "";
-  const token = localStorage.getItem("fc_token");
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [list, setList] = useState<Product[]>([]);
@@ -295,10 +290,12 @@ const FarmerDashboard = () => {
   const [unread, setUnread] = useState<UnreadMap>({});
   const [drawerProduct, setDrawerProduct] = useState<Product | null>(null);
   const [statsData, setStatsData] = useState<StatsData>({
-    totalEarnings: 0,
-    ordersThisMonth: 0,
-    avgRating: 0,
-  });
+  totalEarnings: 0,
+  ordersThisMonth: 0,
+  avgRating: 0,
+});
+const [earningsTrend, setEarningsTrend] = useState<{ month: string; earnings: number }[]>([]); 
+
 
   // ── Derived dynamic stats ──────────────────────────────────────────────────
   const dynamicStats = [
@@ -331,12 +328,9 @@ const FarmerDashboard = () => {
   // ── Fetch farmer stats ─────────────────────────────────────────────────────
   useEffect(() => {
   const fetchStats = async () => {
-    const token = localStorage.getItem("fc_token"); // fresh
-    if (!token || !myId) return;
+    if (!myId) return;
     try {
-      const { data } = await axios.get(`${API_BASE}/orders/farmer-stats`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await API.get('/orders/farmer-stats');
       setStatsData(data.data);
     } catch (err) {
       console.error("Failed to fetch stats", err);
@@ -345,17 +339,26 @@ const FarmerDashboard = () => {
   fetchStats();
 }, [myId]);
 
+useEffect(() => {
+  const fetchTrend = async () => {
+    if (!myId) return;
+    try {
+      const { data } = await API.get('/orders/earnings-trend');
+      setEarningsTrend(data.data);
+    } catch (err) {
+      console.error("Failed to fetch earnings trend", err);
+    }
+  };
+  fetchTrend();
+}, [myId]);
 
   // ── Fetch my products ──────────────────────────────────────────────────────
   // ✅ Read token fresh inside each useEffect
 useEffect(() => {
   const fetchMyProducts = async () => {
-    const token = localStorage.getItem("fc_token"); // ← read fresh here
-    if (!token) return; // ← guard
+     // ← guard
     try {
-      const { data } = await axios.get(`${API_BASE}/products/my`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await API.get(`/products/my`);
       setList(Array.isArray(data) ? data : data.data ?? []);
     } catch (err) {
       console.error("Failed to fetch products", err);
@@ -367,12 +370,9 @@ useEffect(() => {
   // ── Fetch chats grouped by product ────────────────────────────────────────
  useEffect(() => {
   const fetchChats = async () => {
-    const token = localStorage.getItem("fc_token"); // fresh
-    if (!token || !myId) return;
+    if (!myId) return;
     try {
-      const { data } = await axios.get(`${API_BASE}/chat/my`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await API.get(`/chat/my`);
       const chats: Chat[] = data.data || [];
       const grouped: ProductChatsMap = {};
       chats.forEach((c) => {
@@ -441,9 +441,7 @@ useEffect(() => {
 
   const deleteProduct = async (p: Product) => {
     try {
-      await axios.delete(`${API_BASE}/products/${p._id ?? (p as any).id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await API.delete(`/products/${p._id ?? (p as any).id}`);
       setList(list.filter(
         (x) => (x._id ?? (x as any).id) !== (p._id ?? (p as any).id)
       ));
@@ -503,9 +501,9 @@ useEffect(() => {
           onSuccess={(product) => {
             setList((prev) => [product, ...prev]);
             // Refresh stats after adding a product
-            axios.get(`${API_BASE}/orders/farmer-stats`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }).then(({ data }) => setStatsData(data.data)).catch(() => {});
+            API.get(`/orders/farmer-stats`)
+            .then(({ data }) => setStatsData(data.data))
+            .catch(() => {});
           }}
         />
       )}

@@ -10,7 +10,6 @@ const socketSetup = (server) => {
   });
 
   io.on('connection', (socket) => {
-    console.log('User connected:', socket.id);
 
     // Each user joins their own room (userId) so we can target them
     socket.on('join', (userId) => {
