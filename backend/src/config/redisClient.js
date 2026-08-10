@@ -4,11 +4,11 @@ const redisClient = createClient({
   url: process.env.REDIS_URL || 'redis://localhost:6379',
   socket: {
     reconnectStrategy: (retries) => {
-      if (retries > 10) {
-        console.error('Redis: too many reconnect attempts, giving up');
-        return new Error('Redis reconnect failed');
+      const delay = Math.min(retries * 100, 3000); // cap the wait, but never stop trying
+      if (retries % 10 === 0) {
+        console.warn(`Redis: still retrying to connect (attempt ${retries})...`);
       }
-      return Math.min(retries * 100, 3000); // exponential-ish backoff, capped at 3s
+      return delay;
     },
   },
 });
@@ -17,8 +17,6 @@ redisClient.on('error', (err) => console.error('Redis Client Error:', err.messag
 redisClient.on('ready', () => console.log('✅ Redis ready'));
 redisClient.on('reconnecting', () => console.warn('⚠️  Redis reconnecting...'));
 
-// Connect without crashing the process if Redis is down at boot —
-// the app must survive without caching, not die because of it.
 (async () => {
   try {
     await redisClient.connect();
