@@ -18,6 +18,10 @@ services:
         sync: false
       - key: JWT_SECRET
         sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
       - key: SMTP_HOST
         sync: false
       - key: SMTP_PORT
@@ -69,5 +73,5 @@ services:
       - key: REDIS_URL
         fromService:
           name: farmconnect-redis
-          type: redis
+          type: keyvalue
           property: connectionString
