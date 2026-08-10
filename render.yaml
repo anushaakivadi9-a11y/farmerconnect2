@@ -1,5 +1,5 @@
 services:
-  - type: redis
+  - type: keyvalue
     name: farmconnect-redis
     plan: free
     ipAllowList: []   
@@ -37,7 +37,7 @@ services:
       - key: REDIS_URL
         fromService:
           name: farmconnect-redis
-          type: redis
+          type: keyvalue
           property: connectionString
 
   - type: worker
