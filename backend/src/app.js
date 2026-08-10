@@ -57,11 +57,21 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
+const mongoose = require('mongoose');
+const redisClient = require('./config/redisClient');
+
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  const mongoUp = mongoose.connection.readyState === 1;
+  const redisUp = redisClient.isReady;
+
+  res.status(mongoUp ? 200 : 503).json({
+    status: mongoUp && redisUp ? 'OK' : 'DEGRADED',
     timestamp: new Date().toISOString(),
-    env: process.env.NODE_ENV 
+    env: process.env.NODE_ENV,
+    dependencies: {
+      mongo: mongoUp ? 'connected' : 'disconnected',
+      redis: redisUp ? 'connected' : 'disconnected',
+    },
   });
 });
 

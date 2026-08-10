@@ -1,0 +1,53 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: farmconnect-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: farmconnect-backend
+    env_file:
+      - ./backend/.env
+    environment:
+      # Overrides whatever REDIS_URL is in .env — inside Compose's network,
+      # "redis" is the service name above, and Compose's built-in DNS
+      # resolves it automatically. No manual --network flag needed anymore.
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: production
+    ports:
+      - "5000:5000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: farmconnect-worker
+    command: ["node", "src/workers/index.js"]
+    env_file:
+      - ./backend/.env
+    environment:
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: production
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  redis-data:
