@@ -20,6 +20,8 @@ const generateRefreshToken = async (userId) => {
 
 const register = async (req, res) => {
   try {
+    console.log('🟡 [register] start');
+
     const { name, email, password, role, location, phone } = req.body;
 
 
@@ -32,9 +34,14 @@ const register = async (req, res) => {
       ...(phone && { phone }),
       ...(location?.coordinates?.length === 2 && { location }),
     });
+    
+      console.log('🟢 [register] user created:', user._id.toString());
 
     const accessToken = generateToken(user._id);
+    console.log('🟢 [register] user created:', user._id.toString());
+
     const refreshToken = await generateRefreshToken(user._id);
+    console.log('🟢 [register] refresh token generated');
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -42,6 +49,7 @@ const register = async (req, res) => {
       sameSite: 'strict',
       maxAge: REFRESH_TOKEN_TTL_SECONDS * 1000,
     });
+        console.log('🟢 [register] cookie set');
 
     res.status(201).json({
       success: true,
@@ -54,7 +62,11 @@ const register = async (req, res) => {
         location: user.location
       }
     });
+        console.log('🟢 [register] response sent');
+
   } catch (error) {
+        console.error('🔴 [register] caught error:', error);
+
     res.status(500).json({
       success: false,
       message: error.message
