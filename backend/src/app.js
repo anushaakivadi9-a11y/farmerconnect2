@@ -51,11 +51,6 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100
-});
-app.use('/api/', limiter);
 
 const mongoose = require('mongoose');
 const redisClient = require('./config/redisClient');
@@ -74,6 +69,14 @@ app.get('/api/health', (req, res) => {
     },
   });
 });
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  skip: (req) => req.path === '/api/health',
+
+});
+app.use('/api/', limiter);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
