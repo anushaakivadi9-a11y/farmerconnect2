@@ -84,6 +84,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/admin', adminRoutes);
+app.use("/api/wishlist", wishlistRoutes);
 
 app.use('*', (req, res) => {
   res.status(404).json({

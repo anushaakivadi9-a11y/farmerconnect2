@@ -18,6 +18,7 @@ import NotFound from "./pages/NotFound";
 import Checkout from "@/pages/buyer/checkout";
 import ProductDetail from "./pages/public/ProductDetail";
 import About from "./pages/public/About";
+import { WishlistProvider } from "@/context/WishlistContext";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <CartProvider>
+            <WishlistProvider>
             <Routes>
               <Route element={<MainLayout />}>
                 <Route path="/" element={<Home />} />
@@ -47,6 +49,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
 
             </Routes>
+            </WishlistProvider>
           </CartProvider>
         </AuthProvider>
       </BrowserRouter>

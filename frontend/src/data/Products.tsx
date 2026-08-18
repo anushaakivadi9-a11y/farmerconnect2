@@ -14,7 +14,7 @@ const Products = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  
   useEffect(() => {
     const fetchProducts = async () => {
       try {

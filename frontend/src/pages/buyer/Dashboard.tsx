@@ -7,6 +7,7 @@ import WeatherCard from "@/components/widgets/WeatherCard";
 import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 import { toast } from "sonner";
+import { useWishlist } from "@/context/WishlistContext";
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 
@@ -234,6 +235,7 @@ const [recommended, setRecommended] = useState<any[]>([]);
 
   const activeOrders  = orders.filter(o => !["delivered", "cancelled"].includes(o.orderStatus));
   const deliveredCount = orders.filter(o => o.orderStatus === "delivered").length;
+  const { wishlist } = useWishlist();
 
   return (
     <div className="container mx-auto px-6 py-8">
@@ -249,7 +251,7 @@ const [recommended, setRecommended] = useState<any[]>([]);
       <div className="grid lg:grid-cols-3 gap-4 mb-10">
         {[
           { icon: Package, label: "Active Orders",          value: String(activeOrders.length) },
-          { icon: Heart,   label: "Wishlist",               value: "12" },
+          { icon: Heart,   label: "Wishlist",               value: String(wishlist.length) },
           { icon: Truck,   label: "Delivered this month",   value: String(deliveredCount) },
         ].map((s, i) => (
           <motion.div

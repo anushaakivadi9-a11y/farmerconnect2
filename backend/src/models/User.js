@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
       type: [Number], // [longitude, latitude]
     }
   },
+  wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
   phone: { type: String },
   isVerified: { type: Boolean, default: true },
   isActive: { type: Boolean, default: true }

@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { ShoppingCart, MessageCircle, MapPin } from "lucide-react";
+import { ShoppingCart, MessageCircle, MapPin, Heart } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import { Product } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { toast } from "sonner";
 import ChatWindow from "@/components/chat/ChatWindow";
 import { useNavigate } from "react-router-dom";
@@ -15,12 +16,13 @@ interface Props {
 const ProductCard = ({ product }: Props) => {
   const { add, items } = useCart();
   const { user } = useAuth();
+  const { isWishlisted, toggleWishlist } = useWishlist();
   const [chatOpen, setChatOpen] = useState(false);
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const inCart = items.some((i) => i.product._id === product._id);
+  const wishlisted = isWishlisted(product._id);
 
-  // farmer can be populated object { _id, name } or raw string
   const farmerId =
     typeof product.farmer === "object" && product.farmer !== null
       ? (product.farmer as any)._id
@@ -31,12 +33,23 @@ const navigate = useNavigate();
       ? (product.farmer as any).name
       : "Farmer";
 
-  const handleAdd = () => {
+  const handleAdd = (e: React.MouseEvent) => {
+    e.stopPropagation();
     add(product);
     toast.success(`${product.name} added to cart`);
   };
 
-  const handleChat = () => {
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user) {
+      toast.error("Please log in to save items");
+      return;
+    }
+    toggleWishlist(product._id);
+  };
+
+  const handleChat = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!user) {
       toast.error("Please log in to chat with the seller");
       return;
@@ -66,7 +79,19 @@ const navigate = useNavigate();
               ✓ Verified
             </span>
           )}
-          <span className="absolute top-2 right-2 text-[10px] font-semibold bg-background/80 backdrop-blur-sm px-2 py-0.5 rounded-full capitalize">
+
+          <button
+            onClick={handleWishlist}
+            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-background/80 backdrop-blur-sm grid place-items-center hover:bg-background transition-colors"
+            aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          >
+            <Heart
+              size={14}
+              className={wishlisted ? "fill-red-500 text-red-500" : "text-foreground"}
+            />
+          </button>
+
+          <span className="absolute bottom-2 left-2 text-[10px] font-semibold bg-background/80 backdrop-blur-sm px-2 py-0.5 rounded-full capitalize">
             {product.category}
           </span>
         </div>
@@ -80,7 +105,6 @@ const navigate = useNavigate();
             {farmerName}
           </p>
 
-          {/* Price + Add to Cart */}
           <div className="flex items-center justify-between mt-3">
             <div>
               <span className="text-lg font-bold">₹{product.price}</span>
@@ -100,7 +124,6 @@ const navigate = useNavigate();
             </button>
           </div>
 
-          {/* Chat with Seller */}
           <button
             onClick={handleChat}
             className="mt-2 w-full flex items-center justify-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 hover:text-primary transition-all"
